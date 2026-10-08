@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crossover — AI Weather Intelligence</title>
+<meta name="description" content="Crossover is a next-generation AI weather intelligence platform: live forecasting, radar maps, environmental analytics and a conversational weather assistant." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/tokens.css" />
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/layout.css" />
+<link rel="stylesheet" href="assets/css/components.css" />
+<link rel="stylesheet" href="assets/css/animations.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%2335E0F2' stroke-width='2.5'/%3E%3Cpath d='M7 20c5-9 13-9 18 0' fill='none' stroke='%23FFC96B' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- ambient page-level lighting -->
+<div class="page-aura" aria-hidden="true">
+  <span class="aura aura--cyan"></span>
+  <span class="aura aura--blue"></span>
+  <span class="aura aura--amber"></span>
+</div>
+
+<!-- ══════════ APPLICATION WINDOW ══════════ -->
+<div class="stage">
+  <div class="app-window" id="appWindow">
+
+    <!-- ─────────── SIDEBAR ─────────── -->
+    <aside class="sidebar" aria-label="Primary navigation">
+      <div class="sidebar__brand">
+        <a class="brand" href="#" aria-label="Crossover home">
+          <span class="brand__mark" data-brand-mark></span>
+          <span class="brand__text">
+            <span class="brand__name">Crossover</span>
+            <span class="brand__tag">Weather&nbsp;AI</span>
+          </span>
+        </a>
+      </div>
+
+      <nav class="sidebar__nav" data-nav>
+        <span class="nav__rail" aria-hidden="true"></span>
+        <ul class="nav__list" role="list">
+          <li><button class="nav__item is-active" data-nav-item data-view="dashboard" data-tip="Dashboard"><span class="nav__icon" data-icon="dashboard"></span><span class="nav__label">Dashboard</span></button></li>
+          <li><button class="nav__item" data-nav-item data-view="map" data-tip="Weather Map"><span class="nav__icon" data-icon="map"></span><span class="nav__label">Weather Map</span></button></li>
+          <li><button class="nav__item" data-nav-item data-view="locations" data-tip="Locations"><span class="nav__icon" data-icon="pin"></span><span class="nav__label">Locations</span></button></li>
+          <li><button class="nav__item" data-nav-item data-view="radar" data-tip="Radar"><span class="nav__icon" data-icon="radar"></span><span class="nav__label">Radar</span></button></li>
+          <li><button class="nav__item" data-nav-item data-view="calendar" data-tip="Calendar"><span class="nav__icon" data-icon="calendar"></span><span class="nav__label">Calendar</span></button></li>
+          <li><button class="nav__item" data-nav-item data-view="alerts" data-tip="Alerts"><span class="nav__icon" data-icon="bell"></span><span class="nav__label">Alerts</span><span class="nav__badge" data-alert-count>3</span></button></li>
+          <li><button class="nav__item" data-nav-item data-view="settings" data-tip="Settings"><span class="nav__icon" data-icon="settings"></span><span class="nav__label">Settings</span></button></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar__foot">
+        <button class="status-pill" data-status-pill aria-label="Live data status">
+          <span class="status-pill__dot"></span>
+          <span class="status-pill__text">LIVE</span>
+        </button>
+        <button class="avatar" data-profile-btn aria-label="Open profile">
+          <span class="avatar__ring"></span>
+          <span class="avatar__inner" data-avatar></span>
+          <span class="avatar__presence"></span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ─────────── MAIN ─────────── -->
+    <main class="workspace" id="workspace">
+
+      <!-- topbar -->
+      <header class="topbar">
+        <div class="topbar__lead">
+          <h1 class="topbar__title">Dashboard</h1>
+          <p class="topbar__sub">
+            <span data-clock-time>--:--:--</span>
+            <span class="dot-sep"></span>
+            <span data-clock-date>—</span>
+            <span class="dot-sep"></span>
+            <span class="muted" data-updated>Synced just now</span>
+          </p>
+        </div>
+
+        <div class="topbar__actions">
+          <button class="unit-toggle" data-unit-toggle aria-label="Toggle temperature unit">
+            <span class="unit-toggle__opt is-active" data-unit="c">°C</span>
+            <span class="unit-toggle__opt" data-unit="f">°F</span>
+          </button>
+          <button class="ghost-btn" data-ai-open-top>
+            <span data-icon="sparkle"></span><span>Ask AI</span>
+          </button>
+          <button class="search-btn" data-search-open>
+            <span class="search-btn__icon" data-icon="search"></span>
+            <span class="search-btn__text">Search city or airport…</span>
+            <kbd class="search-btn__kbd">/</kbd>
+          </button>
+        </div>
+      </header>
+
+      <!-- dashboard grid -->
+      <div class="canvas" data-canvas>
+
+        <!-- HERO -->
+        <section class="panel hero" data-hero aria-label="Current conditions">
+          <div class="hero__scene" data-hero-scene></div>
+          <div class="hero__particles" data-hero-particles aria-hidden="true"></div>
+          <div class="hero__scrim" aria-hidden="true"></div>
+
+          <div class="hero__content">
+            <div class="hero__meta">
+              <span class="chip chip--live"><span class="chip__pulse"></span>Live conditions</span>
+              <span class="chip">Updated 2 min ago</span>
+            </div>
+
+            <div class="hero__primary">
+              <button class="hero__location" data-hero-location>
+                <span class="hero__loc-icon" data-icon="pin"></span>
+                <span class="hero__loc-text">
+                  <strong data-hero-city>New Delhi</strong>
+                  <small data-hero-region>Delhi · India</small>
+                </span>
+                <span class="hero__loc-caret" data-icon="caret"></span>
+              </button>
+
+              <div class="hero__temp-row">
+                <div class="temp" data-hero-temp>
+                  <span class="temp__value">28</span><span class="temp__unit">°</span>
+                </div>
+                <div class="hero__condition">
+                  <span class="hero__cond-main" data-hero-cond>Rainy Storm Clouds</span>
+                  <span class="hero__cond-sub">Feels like <b data-hero-feels>31°</b> · <span data-hero-range>H 30° / L 21°</span></span>
+                  <span class="hero__chips">
+                    <span class="pill pill--storm" data-hero-tag>Thunderstorm</span>
+                    <span class="pill">Rain 78%</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="hero__actions">
+                <button class="cta" data-search-open>
+                  <span data-icon="search"></span><span>Change location</span>
+                </button>
+                <button class="cta cta--ghost" data-hero-details>
+                  <span data-icon="layers"></span><span>Hourly detail</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="hero__footer">
+              <div class="hero__stat"><span data-icon="wind"></span><span class="hero__stat-k">Wind</span><span class="hero__stat-v" data-hero-wind>18 km/h</span></div>
+              <div class="hero__stat"><span data-icon="droplet"></span><span class="hero__stat-k">Humidity</span><span class="hero__stat-v" data-hero-hum>84%</span></div>
+              <div class="hero__stat"><span data-icon="eye"></span><span class="hero__stat-k">Visibility</span><span class="hero__stat-v" data-hero-vis>8 km</span></div>
+              <div class="hero__stat"><span data-icon="gauge"></span><span class="hero__stat-k">Pressure</span><span class="hero__stat-v" data-hero-pres>1004 hPa</span></div>
+              <div class="hero__stat"><span data-icon="sun"></span><span class="hero__stat-k">Sunset</span><span class="hero__stat-v">19:42</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- HIGHLIGHTS -->
+        <section class="panel highlights" aria-label="Today's highlights">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Today's Highlights</h2>
+              <p class="panel__sub" id="highlightsSub">Today · Live model output</p>
+            </div>
+            <button class="icon-btn" data-icon-btn="more" aria-label="More options"><span data-icon="more"></span></button>
+          </div>
+          <div class="highlights__grid" data-highlights></div>
+        </section>
+
+        <!-- FORECAST -->
+        <section class="panel forecast" aria-label="7 day forecast">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">7 Days Forecast</h2>
+              <p class="panel__sub">Hourly resolution · model blend 0.82</p>
+            </div>
+            <div class="segmented" role="tablist" aria-label="Forecast unit">
+              <button class="segmented__opt is-active" data-forecast-mode="list" role="tab">List</button>
+              <button class="segmented__opt" data-forecast-mode="bars" role="tab">Bars</button>
+            </div>
+          </div>
+          <div class="forecast__body">
+            <div class="forecast__list" data-forecast-list></div>
+            <div class="forecast__aside" data-forecast-aside></div>
+          </div>
+        </section>
+
+        <!-- MAP -->
+        <section class="panel map" aria-label="Weather condition map">
+          <div class="panel__head panel__head--overlay">
+            <div>
+              <h2 class="panel__title">Weather Condition Map</h2>
+              <p class="panel__sub"><span data-map-status>Radar composite · live</span></p>
+            </div>
+            <div class="map__tabs" role="tablist" aria-label="Map layer">
+              <button class="map__tab is-active" data-layer="precip" role="tab">Precipitation</button>
+              <button class="map__tab" data-layer="temp" role="tab">Temperature</button>
+              <button class="map__tab" data-layer="cloud" role="tab">Clouds</button>
+              <button class="map__tab" data-layer="wind" role="tab">Wind</button>
+            </div>
+          </div>
+
+          <div class="map__stage" data-map-stage>
+            <div class="map__canvas" data-map-canvas></div>
+
+            <div class="map__controls">
+              <div class="map__ctrl-group">
+                <button class="map__ctrl" data-map="zoom-in" aria-label="Zoom in"><span data-icon="plus"></span></button>
+                <button class="map__ctrl" data-map="zoom-out" aria-label="Zoom out"><span data-icon="minus"></span></button>
+              </div>
+              <div class="map__ctrl-group">
+                <button class="map__ctrl is-on" data-map="locate" aria-label="My location"><span data-icon="locate"></span></button>
+                <button class="map__ctrl is-on" data-map="radar-sweep" aria-label="Radar sweep"><span data-icon="radar"></span></button>
+                <button class="map__ctrl" data-map="settings" aria-label="Map settings"><span data-icon="settings"></span></button>
+              </div>
+            </div>
+
+            <div class="map__zoomreadout" data-map-readout>Zoom 1.0×</div>
+
+            <div class="map__legend">
+              <div class="map__legend-head">
+                <span class="map__legend-title">Precipitation intensity</span>
+                <span class="map__legend-unit">mm/h</span>
+              </div>
+              <div class="legend__bar" data-legend-bar></div>
+              <div class="legend__ticks"><span>Light</span><span>Moderate</span><span>Heavy</span><span>Extreme</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOCATIONS -->
+        <section class="panel locations" aria-label="Saved locations">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Locations</h2>
+              <p class="panel__sub">3 tracked regions · live</p>
+            </div>
+            <button class="ghost-btn ghost-btn--sm" data-add-location><span data-icon="plus"></span><span>Add</span></button>
+          </div>
+          <div class="locations__grid" data-locations></div>
+        </section>
+
+      </div><!-- /canvas -->
+
+      <!-- ░░ WORKSPACE PAGES ░░ -->
+      <div class="page" data-page="map">
+        <section class="panel map page__map" aria-label="Weather map">
+          <div class="panel__head panel__head--overlay">
+            <div>
+              <h2 class="panel__title">Weather Condition Map</h2>
+              <p class="panel__sub"><span data-map-status>Radar composite · live</span></p>
+            </div>
+            <div class="map__tabs" role="tablist" aria-label="Map layer">
+              <button class="map__tab is-active" data-layer="precip" role="tab">Precipitation</button>
+              <button class="map__tab" data-layer="temp" role="tab">Temperature</button>
+              <button class="map__tab" data-layer="cloud" role="tab">Clouds</button>
+              <button class="map__tab" data-layer="wind" role="tab">Wind</button>
+            </div>
+          </div>
+          <div class="map__stage" data-map-stage>
+            <div class="map__canvas" data-map-canvas-page></div>
+            <div class="map__controls">
+              <div class="map__ctrl-group">
+                <button class="map__ctrl" data-map="zoom-in" aria-label="Zoom in"><span data-icon="plus"></span></button>
+                <button class="map__ctrl" data-map="zoom-out" aria-label="Zoom out"><span data-icon="minus"></span></button>
+              </div>
+              <div class="map__ctrl-group">
+                <button class="map__ctrl is-on" data-map="locate" aria-label="My location"><span data-icon="locate"></span></button>
+                <button class="map__ctrl is-on" data-map="radar-sweep" aria-label="Radar sweep"><span data-icon="radar"></span></button>
+                <button class="map__ctrl" data-map="settings" aria-label="Map settings"><span data-icon="settings"></span></button>
+              </div>
+            </div>
+            <div class="map__zoomreadout" data-map-readout>Zoom 1.0×</div>
+            <div class="map__legend">
+              <div class="map__legend-head">
+                <span class="map__legend-title">Precipitation intensity</span>
+                <span class="map__legend-unit">mm/h</span>
+              </div>
+              <div class="legend__bar"></div>
+              <div class="legend__ticks"><span>Light</span><span>Moderate</span><span>Heavy</span><span>Extreme</span></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="page" data-page="locations">
+        <section class="panel" aria-label="Locations">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">All India · Current Conditions</h2>
+              <p class="panel__sub">28 states + Delhi, Chandigarh, Puducherry, Jammu &amp; Kashmir, Ladakh, Andaman &amp; Nicobar, Dadra &amp; Daman, Lakshadweep</p>
+            </div>
+            <span class="pill">36 regions</span>
+          </div>
+          <div class="states-grid" data-states-grid></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="radar">
+        <section class="panel map page__map" aria-label="Radar">
+          <div class="panel__head panel__head--overlay">
+            <div>
+              <h2 class="panel__title">Precipitation Radar</h2>
+              <p class="panel__sub"><span data-map-status>Composite sweep · live</span></p>
+            </div>
+          </div>
+          <div class="map__stage">
+            <div class="map__canvas" data-map-canvas-radar></div>
+            <div class="map__controls">
+              <div class="map__ctrl-group">
+                <button class="map__ctrl" data-map="zoom-in" aria-label="Zoom in"><span data-icon="plus"></span></button>
+                <button class="map__ctrl" data-map="zoom-out" aria-label="Zoom out"><span data-icon="minus"></span></button>
+              </div>
+              <div class="map__ctrl-group">
+                <button class="map__ctrl is-on" data-map="radar-sweep" aria-label="Radar sweep"><span data-icon="radar"></span></button>
+                <button class="map__ctrl" data-map="settings" aria-label="Reset view"><span data-icon="settings"></span></button>
+              </div>
+            </div>
+            <div class="map__zoomreadout" data-map-readout>Zoom 1.0×</div>
+          </div>
+        </section>
+        <section class="panel page__strip" aria-label="Today's rain profile">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Today's Rain Profile</h2>
+              <p class="panel__sub">Hourly precipitation probability · model output</p>
+            </div>
+          </div>
+          <div class="rain-bars" data-rain-bars></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="calendar">
+        <section class="panel" aria-label="Calendar">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Forecast Calendar</h2>
+              <p class="panel__sub">16-day outlook · select a date to plan around its weather</p>
+            </div>
+            <span class="pill">Next 16 days</span>
+          </div>
+          <div class="cal-grid" data-calendar-grid></div>
+        </section>
+        <section class="panel page__strip" aria-label="Tomorrow at a glance">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Tomorrow at a Glance</h2>
+              <p class="panel__sub">Night-time build-up profile · overnight temperatures</p>
+            </div>
+          </div>
+          <div class="tomorrow-strip" data-tomorrow-strip></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="alerts">
+        <section class="panel" aria-label="Alerts">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Weather Advisories</h2>
+              <p class="panel__sub">Auto-derived from live model output across India</p>
+            </div>
+            <span class="pill" data-alert-count>0</span>
+          </div>
+          <div class="alerts-list" data-alerts-list></div>
+        </section>
+      </div>
+
+      <div class="page" data-page="settings">
+        <section class="panel page__settings" aria-label="Settings">
+          <div class="panel__head">
+            <div>
+              <h2 class="panel__title">Workspace Settings</h2>
+              <p class="panel__sub">Control units, auto-refresh and motion</p>
+            </div>
+          </div>
+          <div class="settings-grid">
+            <div class="setting">
+              <strong>Units</strong>
+              <p>Temperature scope for every view in the app.</p>
+              <div class="unit-toggle" data-unit-toggle>
+                <span class="unit-toggle__opt is-active" data-unit="c">°C</span>
+                <span class="unit-toggle__opt" data-unit="f">°F</span>
+              </div>
+            </div>
+            <div class="setting">
+              <strong>Auto-refresh</strong>
+              <p>How often the live model output is re-fetched.</p>
+              <div class="segmented" data-refresh>
+                <button class="segmented__opt is-active" data-refresh-ms="0">Off</button>
+                <button class="segmented__opt" data-refresh-ms="900000">15 min</button>
+                <button class="segmented__opt" data-refresh-ms="1800000">30 min</button>
+                <button class="segmented__opt" data-refresh-ms="3600000">60 min</button>
+              </div>
+            </div>
+            <div class="setting">
+              <strong>Reduce motion</strong>
+              <p>Calm the cinematic sweep, particles and transitions.</p>
+              <button class="switch" data-motion-toggle role="switch" aria-checked="false">
+                <span class="switch__knob"></span>
+              </button>
+            </div>
+            <div class="setting">
+              <strong>Data source</strong>
+              <p>Live telemetry from <a href="https://open-meteo.com" style="color:var(--c-cyan)">Open-Meteo</a> · no key, free tier · updated roughly hourly.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- AI assistant dock -->
+    <div class="ai" data-ai-root>
+      <button class="ai__fab" data-ai-toggle aria-expanded="false" aria-controls="aiPanel">
+        <span class="ai__fab-glow" aria-hidden="true"></span>
+        <span class="ai__fab-icon" data-icon="sparkle"></span>
+        <span class="ai__fab-text">
+          <strong>Ask Crossover AI</strong>
+          <small data-ai-status>Forecasting context loaded</small>
+        </span>
+        <span class="ai__fab-close" data-icon="close" aria-hidden="true"></span>
+      </button>
+
+      <section class="ai__panel" id="aiPanel" data-ai-panel aria-hidden="true" aria-label="Crossover AI assistant">
+        <header class="ai__head">
+          <span class="ai__avatar" data-icon="sparkle"></span>
+          <div class="ai__head-text">
+            <strong>Crossover AI</strong>
+            <small><span class="ai__dot"></span>Online · reads live conditions</small>
+          </div>
+          <button class="icon-btn" data-ai-close aria-label="Close assistant"><span data-icon="close"></span></button>
+        </header>
+        <div class="ai__log" data-ai-log></div>
+        <div class="ai__chips" data-ai-chips></div>
+        <form class="ai__input" data-ai-form>
+          <input class="ai__field" type="text" data-ai-field placeholder="Ask anything about your weather…" autocomplete="off" aria-label="Message Crossover AI" />
+          <button class="ai__send" type="submit" aria-label="Send"><span data-icon="arrow-up"></span></button>
+        </form>
+      </section>
+    </div>
+
+    <!-- search palette -->
+    <div class="palette" data-palette aria-hidden="true">
+      <div class="palette__scrim" data-palette-close></div>
+      <div class="palette__dialog" role="dialog" aria-modal="true" aria-label="Search locations">
+        <div class="palette__field">
+          <span data-icon="search"></span>
+          <input type="text" data-palette-input placeholder="Search city, state or airport code…" aria-label="Search" />
+          <kbd>ESC</kbd>
+        </div>
+        <div class="palette__body" data-palette-body></div>
+      </div>
+    </div>
+
+    <!-- toast -->
+    <div class="toast" data-toast aria-live="polite"></div>
+
+  </div><!-- /app-window -->
+</div><!-- /stage -->
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/weather-icons.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/hero-scene.js"></script>
+<script src="assets/js/highlights.js"></script>
+<script src="assets/js/forecast.js"></script>
+<script src="assets/js/map.js"></script>
+<script src="assets/js/locations.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/ai.js"></script>
+<script src="assets/js/live.js"></script>
+<script src="assets/js/pages.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
